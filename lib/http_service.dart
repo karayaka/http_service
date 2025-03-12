@@ -7,19 +7,25 @@ import 'package:http_service/base_result.dart';
 
 class HttpService {
   static HttpService? _instance;
-  static HttpService instance(String baseUrl) =>
-      _instance ??= HttpService._init(baseUrl);
+  static HttpService instance(
+          String baseUrl, String appKey, String? authorization) =>
+      _instance ??= HttpService._init(baseUrl, appKey, authorization);
 
   Dio? _dio;
 
-  HttpService._init(String baseUrl) {
+  HttpService._init(String baseUrl, String appKey, String? authorization) {
+    var header = {
+      'Accept': '*/*',
+      'Content-Type': 'application/json',
+      'AppKey': appKey,
+    };
+    if (authorization != null) {
+      header.addAll({"Authorization": "Bearer $authorization"});
+    }
     final baseOptions = BaseOptions(
       baseUrl: baseUrl,
       contentType: Headers.jsonContentType,
-      headers: {
-        'Accept': '*/*',
-        'Content-Type': 'application/json',
-      },
+      headers: header,
     );
 
     _dio = Dio(baseOptions);
@@ -33,9 +39,7 @@ class HttpService {
             (X509Certificate cert, String host, int port) => true;
         return client;
       };
-      return await _dio?.post(path,
-          data: data,
-          options: Options(headers: {"Authorization": "Bearer $token"}));
+      return await _dio?.post(path, data: data);
     } catch (e) {
       rethrow;
     }
@@ -56,9 +60,7 @@ class HttpService {
   Future<BaseResult> get<T extends BaseHttpModel>(String path, T model,
       {Map<String, dynamic>? params, String token = ""}) async {
     try {
-      final response = await _dio?.get(path,
-          queryParameters: params,
-          options: Options(headers: {"Authorization": "Bearer $token"}));
+      final response = await _dio?.get(path, queryParameters: params);
       return _resultBody(response, model);
     } catch (e) {
       rethrow;
@@ -68,8 +70,7 @@ class HttpService {
   Future<BaseResult> delete<T extends BaseHttpModel>(String path, T model,
       {String? token}) async {
     try {
-      final response = await _dio?.delete(path,
-          options: Options(headers: {"Authorization": "Bearer $token"}));
+      final response = await _dio?.delete(path);
       return _resultBody(response, model);
     } catch (e) {
       rethrow;
