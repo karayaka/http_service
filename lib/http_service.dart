@@ -80,13 +80,21 @@ class HttpService {
   BaseResult _resultBody<T extends BaseHttpModel>(Response? response, T model) {
     try {
       var result = BaseResult();
-      var data = response?.data;
-      result.message = data["message"];
-      var dataBody = data["data"];
-      if (dataBody is int || dataBody is bool)
-        result.data = dataBody;
-      else if (dataBody != null) result.data = _prepareData(dataBody, model);
-      return result;
+      result.statusCode = response?.statusCode ?? 400;
+      if (response?.statusCode == 200) {
+        var data = response?.data;
+        result.message = data["message"];
+        var dataBody = data["data"];
+        if (dataBody is int || dataBody is bool) {
+          result.data = dataBody;
+        } else if (dataBody != null) {
+          result.data = _prepareData(dataBody, model);
+        }
+        return result;
+      } else {
+        result.message = "http001";
+        return result;
+      }
     } catch (e) {
       rethrow;
     }
