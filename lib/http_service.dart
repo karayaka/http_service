@@ -45,7 +45,7 @@ class HttpService {
     }
   }
 
-  Future<BaseResult> post<T extends BaseHttpModel>(
+  Future<BaseResult> post<T extends BaseHttpModel?>(
       String path, T? model, Object? data,
       {String? token}) async {
     try {
@@ -57,7 +57,7 @@ class HttpService {
     }
   }
 
-  Future<BaseResult> get<T extends BaseHttpModel>(String path, T model,
+  Future<BaseResult> get<T extends BaseHttpModel?>(String path, T? model,
       {Map<String, dynamic>? params, String token = ""}) async {
     try {
       final response = await _dio?.get(path, queryParameters: params);
@@ -67,7 +67,7 @@ class HttpService {
     }
   }
 
-  Future<BaseResult> delete<T extends BaseHttpModel>(String path, T model,
+  Future<BaseResult> delete<T extends BaseHttpModel?>(String path, T? model,
       {String? token}) async {
     try {
       final response = await _dio?.delete(path);
@@ -77,7 +77,7 @@ class HttpService {
     }
   }
 
-  BaseResult _resultBody<T extends BaseHttpModel>(
+  BaseResult _resultBody<T extends BaseHttpModel?>(
       Response? response, T? model) {
     try {
       var result = BaseResult();
