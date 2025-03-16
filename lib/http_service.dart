@@ -46,7 +46,7 @@ class HttpService {
   }
 
   Future<BaseResult> post<T extends BaseHttpModel>(
-      String path, T model, Object? data,
+      String path, T? model, Object? data,
       {String? token}) async {
     try {
       final response = await basePost(path, data, token: token);
@@ -77,7 +77,8 @@ class HttpService {
     }
   }
 
-  BaseResult _resultBody<T extends BaseHttpModel>(Response? response, T model) {
+  BaseResult _resultBody<T extends BaseHttpModel>(
+      Response? response, T? model) {
     try {
       var result = BaseResult();
       result.statusCode = response?.statusCode ?? 400;
@@ -85,9 +86,9 @@ class HttpService {
         var data = response?.data;
         result.message = data["message"];
         var dataBody = data["data"];
-        if (dataBody is int || dataBody is bool) {
+        if (dataBody is int || dataBody is bool || dataBody is String) {
           result.data = dataBody;
-        } else if (dataBody != null) {
+        } else if (dataBody != null && model != null) {
           result.data = _prepareData(dataBody, model);
         }
         return result;
