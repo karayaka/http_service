@@ -101,13 +101,15 @@ class HttpService {
     }
   }
 
-  _prepareData<T extends BaseHttpModel>(body, T model) {
+  _prepareData<T extends BaseHttpModel?>(body, T? model) {
     try {
-      if (body is List) {
-        return body.map((e) => model.fromJson(e)).cast<T>().toList();
-      } else {
-        T fechData = model.fromJson(body);
-        return fechData;
+      if (model != null) {
+        if (body is List) {
+          return body.map((e) => model.fromJson(e)).cast<T>().toList();
+        } else {
+          T fechData = model.fromJson(body);
+          return fechData;
+        }
       }
     } catch (e) {
       rethrow;
